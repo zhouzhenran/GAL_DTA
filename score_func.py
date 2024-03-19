@@ -12,7 +12,7 @@ from torch_geometric.loader import DataLoader
 from rdkit import DataStructs,Chem
 from rdkit.Chem import AllChem
 from sklearn.metrics import pairwise_distances
-from dataprocess import DTADataset,label_smiles,CHARISOSMISET,fp_smiles
+from dataprocess import DTADataset,label_smiles,CHARISOSMISET
 import meeko
 
 # autodock - 'xxx/AutoDock-GPU-develop/bin/autodock_gpu_64wi'
@@ -39,7 +39,6 @@ def get_pool_embedding(smiles, DTAmodel,mol_dir, protein_name,smiles_len):
         os.system(f'rm {mol_dir}/{protein_name}/processed/*.pt')
 
     ligands = []
-    fps = []
     proteins = []
     aff = []
 
@@ -64,7 +63,7 @@ def get_pool_embedding(smiles, DTAmodel,mol_dir, protein_name,smiles_len):
         df1 = df1.to_numpy()
         np.save(test_save_path,df1)
 
-    dataset = DTADataset1(os.path.join(mol_dir,f'{protein_name}'),train=True,MAX_SMI_LEN=smiles_len)
+    dataset = DTADataset(os.path.join(mol_dir,f'{protein_name}'),train=True,MAX_SMI_LEN=smiles_len)
     dataloader = DataLoader(dataset=dataset,batch_size=1,shuffle=False,num_workers=0)
 
     embedding = torch.zeros([len(dataset), embDim])
@@ -89,7 +88,7 @@ def get_train_embedding(DTAmodel,mol_dir, protein_name, smiles_len):
     # data/generate/protein_name
     mol_dir = os.path.join(mol_dir,f'{protein_name}')
 
-    dataset = DTADataset1(mol_dir,train=True,MAX_SMI_LEN=smiles_len)
+    dataset = DTADataset(mol_dir,train=True,MAX_SMI_LEN=smiles_len)
     dataloader = DataLoader(dataset=dataset, batch_size=1,shuffle=False, num_workers=0)
     embedding = torch.zeros([len(dataset), embDim])
     DTAmodel.to(device)

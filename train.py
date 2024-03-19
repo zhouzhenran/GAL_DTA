@@ -202,7 +202,7 @@ def init_labeldata(generater_path=None,data_path=None,protein_name=None,device=0
         init_smiles.extend(valid_smi)
         init_affinity.extend(affinity)
 
-        affi = pd.Series(random_affinity).astype(bool)
+        affi = pd.Series(init_affinity).astype(bool)
 
         df = pd.DataFrame({
             'smiles': init_smiles,
@@ -355,6 +355,5 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(runseed)
     args.runseed = runseed
-    # first run without init training set
-    # init_labeldata(generater_path=args.model_dir, data_path='data',protein_name=args.protein_name, device=args.device)
+    init_labeldata(generater_path=args.model_dir, data_path='data',protein_name=args.protein_name, device=args.device)
     main(args)

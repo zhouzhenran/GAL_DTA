@@ -1,12 +1,8 @@
 import pandas as pd
-import torch
 import random
-import numpy as np
-from itertools import compress
 from rdkit.Chem.Scaffolds import MurckoScaffold
-from collections import defaultdict
-from sklearn.model_selection import StratifiedKFold
 from rdkit import Chem
+import argparse
 import os
 from score_func import smiles2affinity
 
@@ -157,4 +153,11 @@ def generate_testdataset(protein_name,num=5,split_type='random'):
     df.to_csv(save_path, index=False)
 
 if __name__ == '__main__':
-    generate_testdataset('P51449',num=2000,split_type='random')
+    parser = argparse.ArgumentParser()
+
+    # Add argument
+    parser.add_argument('--protein_name', type=str, default='P51449')
+    parser.add_argument('--num', type=int, default=2000)
+    parser.add_argument('--split_type', type=str, default='random',help='random or scaffold')
+    args = parser.parse_args()
+    generate_testdataset(args.protein_name,num=args.num,split_type=args.split_type)

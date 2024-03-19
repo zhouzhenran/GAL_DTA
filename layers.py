@@ -1,13 +1,7 @@
 import torch
 from torch import nn
-from torch.nn import Parameter
-from typing import *
-from torch_geometric.nn import MessagePassing,GATConv,GINConv,GATv2Conv,GraphConv,GCNConv
-from torch_geometric.utils import add_self_loops, degree, softmax
-from torch_geometric.nn import global_add_pool as gap, global_mean_pool as gmp, global_max_pool, TopKPooling,SAGPooling
-import torch.nn.functional as F
-from torch.nn.modules.batchnorm import _BatchNorm
-from torch_geometric.nn.inits import glorot, zeros
+from torch_geometric.nn import GATv2Conv
+from torch_geometric.nn import global_max_pool
 from enum import IntEnum
 class Dim(IntEnum):
     batch = 0

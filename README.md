@@ -27,5 +27,5 @@ python splitters.py --protein_name P51449 --num 2000 --split_type random
 
 ## Usage
 ```
-python train.py
+python train.py --protein_name P51449
 ```

@@ -9,8 +9,8 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit import DataStructs
 import warnings
-from datahelper import valid_smiles
-from model import DTA1_graph
+from dataprocess import valid_smiles
+from model import DTA_graph
 from score_func import get_train_embedding,get_pool_embedding,compute_firsher_score
 from drugex.training.generators import SequenceRNN
 from drugex.data.corpus.vocabulary import VocSmiles
@@ -65,18 +65,15 @@ class AffinityScore(Scorer):
                 parsed_smiles.append(smi)
                 scores[i] = -1
 
-        xt = get_pool_embedding(smiles=parsed_smiles,DTAmodel=self.DTAmodel,mol_dir='data/aldata/learn',
+        xt = get_pool_embedding(smiles=parsed_smiles,DTAmodel=self.DTAmodel,mol_dir='data/learn',
                                 protein_name=self.protein_name,smiles_len=self.smiles_len,)
         x_train = get_train_embedding(DTAmodel=self.DTAmodel, mol_dir=self.dataroot, smiles_len=self.smiles_len, protein_name=self.protein_name)
         trace_scores = compute_firsher_score(xt, x_train, self.batchsize)
-        print('trace_score:')
         idx = 0
         for i in range(len(parsed_mols)):
             if scores[i] == -1:
                 scores[i] = trace_scores[idx]
                 idx = idx+1
-            if i % 15 == 0 and i > 0:
-                print(scores[i-15:i])
 
         return scores
 
@@ -121,11 +118,6 @@ class SimilaritySocre(Scorer):
                 parsed_smiles.append(smi)
                 scores[i] = -1
 
-        # train_df = pd.read_csv(os.path.join('data/aldata/generate',f'{self.protein_name}_train.csv'))
-        # train_smiles = train_df['smiles']
-        # train_mols = [AllChem.MolFromSmiles(smi) for smi in train_smiles]
-        # fps = [AllChem.GetMorganFingerprintAsBitVect(mol,2,nBits=1024) for mol in train_mols]
-
         smi_scores = np.zeros(len(parsed_smiles))
         for i, smi in enumerate(tqdm(parsed_smiles)):
             try:
@@ -137,12 +129,10 @@ class SimilaritySocre(Scorer):
                 continue
 
         idx = 0
-        # print('fps scores')
         for i in range(len(parsed_mols)):
             if scores[i] == -1:
                 scores[i] = smi_scores[idx]
                 idx = idx + 1
-        # print(scores)
 
         return scores
 
@@ -169,28 +159,17 @@ class ALFinetune(object):
         self.fea_dim = fea_dim
 
     def build_model(self):
-        self.predictor = DTA1_graph(in_dims=65, emb_dim=self.emb_dim,hidden_dim=self.fea_dim,smi_hidden_dim=self.hidden_dims)
-        restore_path = os.path.join(self.pre_path, f'G{self.protein_name}_mse_{self.restore_epoch}.pt')
+        self.predictor = DTA_graph(in_dims=65, emb_dim=self.emb_dim,smi_hidden_dim=self.hidden_dims)
+        restore_path = os.path.join(self.pre_path, f'G{self.protein_name}_{self.restore_epoch}.pt')
         state_dict = torch.load(restore_path,map_location=lambda storage, loc: storage.cuda(0))
         self.predictor.load_state_dict(state_dict)
         self.predictor.to(self.device)
         self.predictor.eval()
 
-
         voc_path = os.path.join(self.model_dir,'chembl_31_smiles_rnn_PT.vocab')
         self.voc = VocSmiles.fromFile(voc_path,encode_frags=False)
-        # self.pretrained = SequenceRNN(voc=self.voc,is_lstm=True,use_gpus=self.gpu)
         self.finetuned = SequenceRNN(voc=self.voc,is_lstm=True,use_gpus=self.gpu)
         pretained_path = os.path.join(self.model_dir, 'chembl_31_smiles_rnn_PT.pkg')
-        # self.pretrained.loadStatesFromFile(pretained_path)
-
-        if self.restore_epoch < 200:
-            self.finetuned.loadStatesFromFile(pretained_path)
-        else:
-            finetuned_path = os.path.join(self.model_dir,'RL',self.protein_name,f'{self.protein_name}_{self.restore_epoch}.pkg')
-            self.finetuned.loadStatesFromFile(finetuned_path)
-
-    def build_Score(self,score):
         train_df = pd.read_csv(os.path.join(self.csv_dir,f'{self.protein_name}_train.csv'))
         train_smiles = train_df['smiles']
         train_mols = [AllChem.MolFromSmiles(smi) for smi in train_smiles]
@@ -200,44 +179,31 @@ class ALFinetune(object):
                                            batchsize=self.batchsize, protein_name=self.protein_name)
         self.SimSocre = SimilaritySocre(protein_name=self.protein_name,fps=fps)
         self.AffSocre.setModifier(ClippedScore(lower_x=0.2,upper_x=0.8))
-        # self.AffSocre.setModifier(ClippedScore(lower_x=0,upper_x=score))
-        # self.SimSocre.setModifier(ClippedScore(lower_x=1,upper_x=0.1))
         self.SimSocre.setModifier(ClippedScore(lower_x=0.8,upper_x=0.1))
         self.scorers = [
             self.AffSocre,
             self.SimSocre
         ]
-        # 需要根据实际实验调整
         self.thresholds = [
             0.5,
             0.5
         ]
 
         self.environment = DrugExEnvironment(self.scorers,self.thresholds,reward_scheme=ParetoTanimotoDistance())
-        # self.environment = DrugExEnvironment(self.scorers,self.thresholds,reward_scheme=ParetoCrowdingDistance())
-        # self.environment = DrugExEnvironment(self.scorers,self.thresholds,reward_scheme=WeightedSum())
-
 
     def build_explorer(self):
         self.explorer = SequenceExplorer(
             agent=self.finetuned,
             env=self.environment,
-            # mutate=self.pretrained,
-            # epsilon=0,
             batch_size=128, # train num
             n_samples=128,# evalute num
             use_gpus=self.gpu
         )
-        self.save_dir = os.path.join(self.model_dir,'RL',self.protein_name)
+        self.save_dir = os.path.join(self.model_dir,'GAL',self.protein_name)
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir,exist_ok=True)
-        rl_path = os.path.join(self.save_dir,f'{self.protein_name}_{self.al_iter}')
-        self.monitor = FileMonitor(rl_path,save_smiles=True,reset_directory=True)
+        gal_path = os.path.join(self.save_dir,f'{self.protein_name}_{self.al_iter}')
+        self.monitor = FileMonitor(gal_path,save_smiles=True,reset_directory=True)
 
     def finetune(self):
         self.explorer.fit(train_loader=None,monitor=self.monitor,epochs=self.epoch)
-
-    def test(self):
-        generated = self.finetuned.generate(num_samples=100)
-        scores = self.environment.getScores(generated.SMILES.to_list())
-        return sum(scores["Desired"]) / len(scores)

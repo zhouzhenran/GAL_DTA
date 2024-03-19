@@ -24,7 +24,7 @@ class Squeeze(nn.Module):
         return input.squeeze(self.dim)
 
 
-class Smiles1CNN(nn.Module):
+class SmilesCNN(nn.Module):
     def __init__(self, in_dim=65, emb_dim=128, out_dim=128):
         '''
 
@@ -32,11 +32,11 @@ class Smiles1CNN(nn.Module):
         :param emb_dim:
         :param out_dim:
         '''
-        super(Smiles1CNN, self).__init__()
+        super(SmilesCNN, self).__init__()
         self.embedding = nn.Embedding(num_embeddings=in_dim, embedding_dim=emb_dim)
         hidden_size = out_dim//2
         self.lstm = nn.LSTM(input_size=emb_dim, hidden_size=hidden_size,batch_first=True,bidirectional=True,num_layers=1)
-        self.gat = GAT1Block(out_dim=out_dim)
+        self.gat = GATBlock(out_dim=out_dim)
 
         self.pool = nn.AdaptiveAvgPool1d(1)
         self.squeeze = Squeeze(-1)
@@ -47,7 +47,6 @@ class Smiles1CNN(nn.Module):
         for name, param in self.lstm.named_parameters():
             if 'weight' in name:
                 nn.init.xavier_uniform_(param.data)
-
 
     def forward(self,data):
         x = data.smi_emb
@@ -65,9 +64,9 @@ class Smiles1CNN(nn.Module):
         return out
 
 
-class GAT1Block(nn.Module):
+class GATBlock(nn.Module):
     def __init__(self,num_dim=78,out_dim=128,heads=5,dropout=0.2):
-        super(GAT1Block, self).__init__()
+        super(GATBlock, self).__init__()
 
         self.gat1 = GATv2Conv(num_dim,num_dim,heads=heads,dropout=0.2)
         self.gat2 = GATv2Conv(num_dim*heads,out_dim,dropout=0.2)
@@ -109,7 +108,6 @@ class FusionBlock(torch.nn.Module):
         super(FusionBlock, self).__init__()
         self.data_dim = in_dim
         self.hidden_dim = int(self.data_dim//r)
-        # 局部特征融合
         self.local_att = nn.Sequential(
             nn.Linear(self.data_dim,self.hidden_dim),
             nn.BatchNorm1d(self.hidden_dim),
@@ -120,13 +118,11 @@ class FusionBlock(torch.nn.Module):
             nn.LeakyReLU(0.1)
         )
         self.local_att.apply(init_weight)
-        # 全局特征融合
         self.global_att = nn.MultiheadAttention(embed_dim=self.data_dim,num_heads=num_head,dropout=0.1)
         nn.init.xavier_uniform_(self.global_att.in_proj_weight)
 
         self.sigmoid = nn.Sigmoid()
 
-        # 第二次局部特征融合
         self.local_att2 = nn.Sequential(
             nn.Linear(self.data_dim, self.hidden_dim),
             nn.BatchNorm1d(self.hidden_dim),
@@ -137,7 +133,6 @@ class FusionBlock(torch.nn.Module):
             nn.LeakyReLU(0.1)
         )
         self.local_att2.apply(init_weight)
-        # 第二层全局特征融合
         self.global_att2 = nn.MultiheadAttention(embed_dim=self.data_dim,num_heads=num_head,dropout=0.1)
         nn.init.xavier_uniform_(self.global_att2.in_proj_weight)
 

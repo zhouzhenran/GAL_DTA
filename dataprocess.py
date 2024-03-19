@@ -13,7 +13,18 @@ from torch_geometric import data as DATA
 import math
 import pandas as pd
 from tqdm import tqdm
-from datahelper import *
+
+# smiles
+CHARISOSMISET = {"#": 29, "%": 30, ")": 31, "(": 1, "+": 32, "-": 33, "/": 34, ".": 2,
+                 "1": 35, "0": 3, "3": 36, "2": 4, "5": 37, "4": 5, "7": 38, "6": 6,
+                 "9": 39, "8": 7, "=": 40, "A": 41, "@": 8, "C": 42, "B": 9, "E": 43,
+                 "D": 10, "G": 44, "F": 11, "I": 45, "H": 12, "K": 46, "M": 47, "L": 13,
+                 "O": 48, "N": 14, "P": 15, "S": 49, "R": 16, "U": 50, "T": 17, "W": 51,
+                 "V": 18, "Y": 52, "[": 53, "Z": 19, "]": 54, "\\": 20, "a": 55, "c": 56,
+                 "b": 21, "e": 57, "d": 22, "g": 58, "f": 23, "i": 59, "h": 24, "m": 60,
+                 "l": 25, "o": 61, "n": 26, "s": 62, "r": 27, "u": 63, "t": 28, "y": 64}
+
+CHARISOSMILEN = 64
 
 def atom_features(atom):
     return np.array(one_of_k_encoding_unk(atom.GetSymbol(),['C', 'N', 'O', 'S', 'F', 'Si', 'P', 'Cl', 'Br', 'Mg', 'Na','Ca', 'Fe', 'As', 'Al', 'I', 'B', 'V', 'K', 'Tl', 'Yb','Sb', 'Sn', 'Ag', 'Pd', 'Co', 'Se', 'Ti', 'Zn', 'H','Li', 'Ge', 'Cu', 'Au', 'Ni', 'Cd', 'In', 'Mn', 'Zr','Cr', 'Pt', 'Hg', 'Pb', 'Unknown']) +
@@ -35,6 +46,11 @@ def one_of_k_encoding_unk(x, allowable_set):
         x = allowable_set[-1]
     return list(map(lambda s: x == s, allowable_set))
 
+def label_smiles(line, MAX_SMI_LEN, smi_ch_ind):
+    X = np.zeros(MAX_SMI_LEN)
+    for i, ch in enumerate(line[:MAX_SMI_LEN]):  # x, smi_ch_ind, y
+        X[i] = smi_ch_ind[ch]
+    return X  # .tolist()
 
 def smile_to_graph(smile):
     mol = Chem.MolFromSmiles(smile)
@@ -54,7 +70,13 @@ def smile_to_graph(smile):
 
     return features, edge_index
 
-class DTADataset1(InMemoryDataset):
+def valid_smiles(smiles):
+    for c in smiles:
+        if c not in CHARISOSMISET:
+            return False
+    return True
+
+class DTADataset(InMemoryDataset):
 
     def __init__(self, root, train=True, transform=None, pre_transform=None, pre_filter=None, MAX_SMI_LEN=442):
         self.MAX_SMI_LEN = MAX_SMI_LEN
@@ -79,11 +101,10 @@ class DTADataset1(InMemoryDataset):
     def _download(self):
         pass
 
-
     def process_data(self, data_path, graph_dict):
         # df = pd.read_csv(data_path)
         df = np.load(data_path,allow_pickle=True)
-        df = pd.DataFrame(df,columns=['smiles','smiles_emb','fps','protein','affinity'])
+        df = pd.DataFrame(df,columns=['smiles','smiles_emb','protein','affinity'])
 
         data_list = []
         for i, row in df.iterrows():
@@ -92,7 +113,6 @@ class DTADataset1(InMemoryDataset):
             label = row['affinity']
 
             x, edge_index = graph_dict[smi]
-            fps = row['fps']
             smi_emb = row['smiles_emb']
 
             # Get Labels
@@ -102,7 +122,6 @@ class DTADataset1(InMemoryDataset):
                     edge_index=torch.LongTensor(edge_index).transpose(1, 0),
                     y=torch.FloatTensor([label]),
                     target=torch.FloatTensor([sequence]),
-                    fps = torch.FloatTensor([fps]),
                     smi_emb = torch.LongTensor([smi_emb])
                 )
             except:
@@ -113,12 +132,10 @@ class DTADataset1(InMemoryDataset):
         return data_list
 
     def process(self):
-        # df_train = pd.read_csv(self.raw_paths[0])
-        # df_test = pd.read_csv(self.raw_paths[1])
         df_train = np.load(self.raw_paths[0],allow_pickle=True)
         df_test = np.load(self.raw_paths[1],allow_pickle=True)
-        df_train = pd.DataFrame(df_train,columns=['smiles','smiles_emb','fps','protein','affinity'])
-        df_test = pd.DataFrame(df_test,columns=['smiles','smiles_emb','fps','protein','affinity'])
+        df_train = pd.DataFrame(df_train,columns=['smiles','smiles_emb','protein','affinity'])
+        df_test = pd.DataFrame(df_test,columns=['smiles','smiles_emb','protein','affinity'])
         df = pd.concat([df_train, df_test])
 
         smiles = df['smiles'].unique()
@@ -149,128 +166,9 @@ class DTADataset1(InMemoryDataset):
         # save preprocessed test data:
         torch.save((data, slices), self.processed_paths[1])
 
-def dataprocess(args):
-
-    dataset = DataSet(
-        f_path = args.dataset,
-        setting = args.problem_type,
-        smilen = args.max_smi_len # 85,100,200,200
-    )
-
-    XD,XT,Y,SMILES,FPS = dataset.parse_data()
-
-    XD = np.array(XD)
-    XT = np.asarray(XT)
-    Y = np.asarray(Y)
-    FPS = np.asarray(FPS)
-
-    label_row_inds, label_col_inds = np.where(
-        np.isnan(Y) == False)  # basically finds the point address of affinity [x,y]
-
-    test_set, outer_train_sets = dataset.read_sets()
-
-    return XD, XT, Y, SMILES, FPS, label_row_inds, label_col_inds, test_set, outer_train_sets
-
-def prepare_interaction_pairs(XD, XT, Y, SMILES,FPS, rows, cols, flag=True):
-    ligands = []
-    targets = []
-    smiles = []
-    affinity = []
-    fps = []
-
-    for pair_ind in range(len(rows)):
-        ligand = XD[rows[pair_ind]]
-        ligands.append(ligand)
-
-        target = XT[cols[pair_ind]]
-        targets.append(target)
-
-        smi = SMILES[rows[pair_ind]]
-        smiles.append(smi)
-
-        fp = FPS[rows[pair_ind]]
-        fps.append(fp)
-
-        affinity.append(Y[rows[pair_ind], cols[pair_ind]])
-
-    if flag:
-        ligand_data = np.stack(ligands) # [n,85]
-        target_data = np.stack(targets) # [n,442]
-        fps_data = np.stack(fps)
-    else:
-        ligand_data = ligands  # [n,85]
-        target_data = targets  # [n,442]
-        fps_data = fps
-
-    return ligand_data, target_data, smiles,fps_data, affinity
-
-def split_by_protein(data_path):
-    save_dir = 'data/aldata/test'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    proteins = json.load(open(data_path + "proteins.txt"), object_pairs_hook=OrderedDict)
-    ligands = json.load(open(data_path + "ligands_can.txt"), object_pairs_hook=OrderedDict)
-    Y = pickle.load(open(data_path + "Y", "rb"), encoding='latin1')
-
-    XTN = []
-    XT = []
-    XD = []
-
-    for t in proteins.keys():
-        XTN.append(t)
-        XT.append(proteins[t])
-    for d in ligands.keys():
-        XD.append(ligands[d])
-
-    rows, cols = np.where(np.isnan(Y) == False)
-
-    ligands = []
-    targets = []
-    targets_name = []
-    affinity = []
-
-    for pair_ind in range(len(rows)):
-        ligand = XD[rows[pair_ind]]
-        ligands.append(ligand)
-
-        target = XT[cols[pair_ind]]
-        targets.append(target)
-
-        target_name = XTN[cols[pair_ind]]
-        targets_name.append(target_name)
-
-        affinity.append(Y[rows[pair_ind], cols[pair_ind]])
-
-    df = pd.DataFrame({
-        'protein': targets_name,
-        'sequence': targets,
-        'smiles': ligands,
-        'affinity': affinity
-    })
-
-    groups = df.groupby('protein')
-    protein_counts = []
-
-    for name, group in groups:
-        count = len(group)
-        protein_counts.append([name, count])
-
-        save_path = os.path.join(save_dir, str(name))
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        save_path = os.path.join(save_path, f'{name}.csv')
-        group[['smiles', 'affinity']].to_csv(save_path, index=False)
-
-    counts_df = pd.DataFrame(protein_counts, columns=['protein', 'count'])
-
-    save_len = os.path.join(save_dir,'protein.csv')
-    counts_df.to_csv(save_len,index=False)
-    print(counts_df)
-
 def process(smiles,affinity,max_smi_len,save_path):
     smiles_save = []
     ligands = []
-    fps = []
     aff = []
     proteins = []
     for i in range(len(smiles)):
@@ -278,7 +176,6 @@ def process(smiles,affinity,max_smi_len,save_path):
             smiles_save.append(smiles[i])
             aff.append(affinity[i])
             ligands.append(label_smiles(smiles[i], max_smi_len, CHARISOSMISET))
-            fps.append(fp_smiles(smiles[i]))
             proteins.append(ligands[-1])
         else:
             print(f"idx :{i} smiles: {smiles[i]} aff: {affinity[i]}")
@@ -287,7 +184,6 @@ def process(smiles,affinity,max_smi_len,save_path):
         {
             'smiles': smiles_save,
             'smiles_emb': ligands,
-            'fps': fps,
             'protein': proteins,
             'affinity': aff
         }
@@ -301,13 +197,13 @@ def load_dataloader(data_dir,protein_name,args,num_iter=0):
     # load data
     train_path = os.path.join(data_dir, f'{protein_name}_train.csv')
     if 'P51449' in protein_name:
-        test_path = os.path.join('data/aldata/zinc', f'P51449_test_scaffold.csv')
+        test_path = os.path.join('data/test', f'P51449_test_scaffold.csv')
     elif 'O00329' in protein_name:
-        test_path = os.path.join('data/aldata/zinc', f'O00329_test_scaffold.csv')
+        test_path = os.path.join('data/test', f'O00329_test_scaffold.csv')
     elif 'P10721' in protein_name:
-        test_path = os.path.join('data/aldata/zinc', f'P10721_test_scaffold.csv')
+        test_path = os.path.join('datatest', f'P10721_test_scaffold.csv')
     elif 'P36888' in protein_name:
-        test_path = os.path.join('data/aldata/zinc', f'P36888_test_scaffold.csv')
+        test_path = os.path.join('data/test', f'P36888_test_scaffold.csv')
 
     traindata = pd.read_csv(train_path)
     testdata = pd.read_csv(test_path)
@@ -334,8 +230,8 @@ def load_dataloader(data_dir,protein_name,args,num_iter=0):
     if os.path.exists(os.path.join(data_dir,protein_name,'processed')):
         os.system(f'rm {data_dir}/{protein_name}/processed/*.pt')
 
-    traindataset = DTADataset1(os.path.join(data_dir,protein_name),train=True,MAX_SMI_LEN=args.max_smi_len)
-    testdataset = DTADataset1(os.path.join(data_dir,protein_name),train=False,MAX_SMI_LEN=args.max_smi_len)
+    traindataset = DTADataset(os.path.join(data_dir,protein_name),train=True,MAX_SMI_LEN=args.max_smi_len)
+    testdataset = DTADataset(os.path.join(data_dir,protein_name),train=False,MAX_SMI_LEN=args.max_smi_len)
 
     trainloader = DataLoader(dataset=traindataset, batch_size=args.batch_size, shuffle=True, num_workers=0)
     testloader = DataLoader(dataset=testdataset, batch_size=args.batch_size, shuffle=False, num_workers=0)

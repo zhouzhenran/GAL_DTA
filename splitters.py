@@ -32,11 +32,6 @@ def generate_scaffold(smiles, include_chirality=False):
         smiles=smiles, includeChirality=include_chirality)
     return scaffold
 
-# # test generate_scaffold
-# s = 'Cc1cc(Oc2nccc(CCC)c2)ccc1'
-# scaffold = generate_scaffold(s)
-# assert scaffold == 'c1ccc(Oc2ccccn2)cc1'
-
 def scaffold_split(smiles_list, num=3,max_num=500):
     """
     Adapted from https://github.com/deepchem/deepchem/blob/master/deepchem/splits/splitters.py
@@ -104,10 +99,10 @@ def random_split(smiles_list, seed=0,num=500):
 
     test_smiles = [smiles_list[i] for i in test_idx]
 
-    path = os.path.join('data/aldata/zinc','P51449_test_random.csv')
+    path = os.path.join('data/test','P51449_test_random.csv')
     smiles1 = pd.read_csv(path)
     smiles1 = smiles1['smiles']
-    path = os.path.join('data/aldata/zinc', 'P51449_test_scaffold.csv')
+    path = os.path.join('data/test', 'P51449_test_scaffold.csv')
     smiles2 = pd.read_csv(path)
     smiles2 = smiles2['smiles']
 
@@ -120,22 +115,19 @@ def random_split(smiles_list, seed=0,num=500):
 
     return train_smiles
 
-def generate_zin_testdataset(protein_name,num=5,split_type='random'):
-    save_path = 'data/aldata/zinc'
+def generate_testdataset(protein_name,num=5,split_type='random'):
+    save_path = 'data/test'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    data_dir = 'data/aldata/chembl.smi'
+    data_dir = 'data/chembl.smi'
     with open(data_dir,'r') as f:
         smiles_list = f.read().splitlines()
-    '''df =pd.read_csv(data_dir,index_col=0)
-    smiles_list = df['smiles']'''
 
-    if split_type == 'random' or split_type == 'train':
+    if split_type == 'random':
         smiles = random_split(smiles_list,seed=24,num=num)
     else:
         smiles = scaffold_split(smiles_list,num=2,max_num=num)
-
 
     print(f'test len: {len(smiles)}')
 
@@ -147,9 +139,11 @@ def generate_zin_testdataset(protein_name,num=5,split_type='random'):
             valid_smi.append(Chem.MolToSmiles(mol))
     print(f'valid smiles num: {len(valid_smi)}')
 
-    protein_file = os.path.join('data/aldata/test', protein_name)
-    autodock = '/home/zhouzhenran/ALGAN/ALGAN-dock/programs/AutoDock-GPU-develop/bin/autodock_gpu_64wi'
-    gpf = '/home/zhouzhenran/ALDTA/AutoDock-Vina/example/autodock_scripts/prepare_gpf.py'
+    protein_file = os.path.join('data/test', protein_name)
+    # change
+    # autodock-gpu & gpf.py in Vina path
+    autodock = 'xxx/AutoDock-GPU-develop/bin/autodock_gpu_64wi'
+    gpf = 'xxx/AutoDock-Vina/example/autodock_scripts/prepare_gpf.py'
 
     affinity = smiles2affinity(smiles=valid_smi, protein_name=protein_name, data_dir=protein_file, gpf=gpf,
                                autodock=autodock)
@@ -163,4 +157,4 @@ def generate_zin_testdataset(protein_name,num=5,split_type='random'):
     df.to_csv(save_path, index=False)
 
 if __name__ == '__main__':
-    generate_zin_testdataset('P51449',num=1000,split_type='train')
+    generate_testdataset('P51449',num=2000,split_type='random')

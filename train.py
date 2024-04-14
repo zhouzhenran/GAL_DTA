@@ -249,6 +249,7 @@ def GenAL(device, args):
     # train predictor in init training set
     logging("================== ITER = %d ===================" % (args.now), args)
     protein_name = args.protein_name
+    num_sample = args.num_sample
 
     csv_dir = 'data/generate'
     save_dir = os.path.join(args.model_dir, 'generate',protein_name)
@@ -297,7 +298,7 @@ def GenAL(device, args):
         new_generator = SequenceRNN(voc=voc,is_lstm=True,use_gpus=tuple([args.device]))
         new_generator.loadStatesFromFile(model_path)
 
-        smiles = new_generator.generate(num_samples=120)['SMILES']
+        smiles = new_generator.generate(num_samples=int(num_sample*1.2))['SMILES']
 
         valid_smi = []
         for smi in smiles:
@@ -306,7 +307,7 @@ def GenAL(device, args):
                 Chem.SanitizeMol(mol)
                 valid_smi.append(Chem.MolToSmiles(mol))
 
-        save_labeleddata(valid_smi,protein_name,save_dir=csv_dir,num=100)
+        save_labeleddata(valid_smi,protein_name,save_dir=csv_dir,num=num_sample)
 
         # train predictor
         traindataset, testdataset, trainloader, testloader,_ = load_dataloader(data_dir=csv_dir,

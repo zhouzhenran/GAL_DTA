@@ -17,6 +17,7 @@ def al_argparser():
     parser.add_argument('--stop_epoch', type=int, default=300)
     parser.add_argument('--gen_epoch', type=int, default=10,help='generator finetune epoch')
     parser.add_argument('--al_iter', type=int, default=50)
+    parser.add_argument('--num_sample', type=int, default=120)
     parser.add_argument('--model_dir', type=str, default='./models')
     parser.add_argument('--runseed', type=int, default=5656,
                         help="Seed for minibatch selection, random initialization.")

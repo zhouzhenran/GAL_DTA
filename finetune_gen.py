@@ -170,6 +170,8 @@ class ALFinetune(object):
         self.voc = VocSmiles.fromFile(voc_path,encode_frags=False)
         self.finetuned = SequenceRNN(voc=self.voc,is_lstm=True,use_gpus=self.gpu)
         pretained_path = os.path.join(self.model_dir, 'chembl_31_smiles_rnn_PT.pkg')
+        self.finetuned.loadStatesFromFile(pretained_path)
+
         train_df = pd.read_csv(os.path.join(self.csv_dir,f'{self.protein_name}_train.csv'))
         train_smiles = train_df['smiles']
         train_mols = [AllChem.MolFromSmiles(smi) for smi in train_smiles]

@@ -176,7 +176,7 @@ def init_labeldata(generater_path=None,data_path=None,protein_name=None,device=0
     protein_file = os.path.join('data/test', protein_name)
     # change
     # autodock-gpu & gpf.py in Vina path
-    autodock = 'xxx/AutoDock-GPU-develop/bin/autodock_gpu_64wi'
+    autodock = 'xxx/AutoDock-GPU/bin/autodock_gpu_64wi'
     gpf = 'xxx/AutoDock-Vina/example/autodock_scripts/prepare_gpf.py'
 
     # init training set for gal-dta
@@ -220,7 +220,7 @@ def save_labeleddata(smiles, protein_name, save_dir,num=100):
     protein_file = os.path.join('data/test', protein_name)
     # change
     # autodock-gpu & gpf.py in Vina path
-    autodock = 'xxx/AutoDock-GPU-develop/bin/autodock_gpu_64wi'
+    autodock = 'xxx/AutoDock-GPU/bin/autodock_gpu_64wi'
     gpf = 'xxx/AutoDock-Vina/example/autodock_scripts/prepare_gpf.py'
 
     if not os.path.exists(save_dir):
@@ -275,7 +275,7 @@ def GenAL(device, args):
     testmodel(protein_name, device, args, save_path=save_path)
 
     ftobj = ALFinetune(dataroot='data', model_dir=args.model_dir,pre_path=save_dir, hidden_dims=args.smi_dim,
-                       fea_dim=args.hidden_dim,protein_name=protein_name,csv_dir=csv_dir,
+                       fea_dim=256,protein_name=protein_name,csv_dir=csv_dir,
                        emb_dim=args.emb_dim, batchsize=args.batch_size, restore_epoch=args.now,
                        device=args.device, epoch=args.gen_epoch, al_iter=args.now+1, smiles_len=args.max_smi_len)
 
@@ -289,7 +289,6 @@ def GenAL(device, args):
         ftobj.al_iter = i
 
         ftobj.build_model()
-        ftobj.build_Score()
         ftobj.build_explorer()
         ftobj.finetune()
 
@@ -336,7 +335,7 @@ def main(args):
 
 if __name__ == '__main__':
     args = al_argparser()
-    timestamp = time.strftime("%Y%m%d_%H")
+    timestamp = time.strftime("%Y%m%d_%H%M")
     args.log_dir = args.log_dir + str(timestamp) + "/"
 
     if not os.path.exists(args.log_dir):

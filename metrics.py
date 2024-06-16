@@ -29,13 +29,13 @@ def pearson(y,f):
     y = np.array(y).reshape(-1)
     f = np.array(f).reshape(-1)
     rp = np.corrcoef(y, f)
-    print(f'pearson:{rp}')
-    return rp[0]
+    # print(f'pearson:{rp}')
+    return rp[0][1]
 
 def spearman(y,f):
     y = np.array(y).reshape(-1)
     f = np.array(f).reshape(-1)
 
     rs = stats.spearmanr(y, f)
-    print(f'spearman:{rs}')
+    # print(f'spearman:{rs}')
     return rs[0]

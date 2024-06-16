@@ -20,11 +20,14 @@ After installing ADFRsuite, AutoDock-Vina and AutoDock-GPU, you need to change `
 ## Data
 The `data\test` folder provides `.pdbqt` files and test sets for the four target proteins used in the paper.  
 If you want to generate test set for other protein, you need to save the `.pdbqt` file for that protein as well as the box size and coordinates (`box.txt`) in `data\test\xxx(your protein name)` folder.
-Then run `split.py` like:
+Then run `splitters.py` like:
 ```
 python splitters.py --protein_name P51449 --num 2000 --split_type random
 ```
-
+Explanation of parameters  
+* --protein_name: protein name, which needs to be consistent with the name of the `data\test\xxx` folder  
+* --num: number of test set data.  
+* --split_type: the method of filtering data. You can choose random or scaffold.
 ## Usage
 ```
 python train.py --protein_name P51449 --al_iter 40 --num_sample 100 --gen_epoch 10 --epoch 1000 --log_dir logs/

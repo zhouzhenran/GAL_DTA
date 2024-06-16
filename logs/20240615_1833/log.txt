@@ -1,0 +1,160 @@
+Namespace(al_iter=40, batch_size=256, device=0, emb_dim=128, epoch=1000, gen_epoch=10, log_dir='logs/20240615_1833/', lr=0.001, max_smi_len=100, model_dir='./models', now=0, num_sample=100, protein_name='P36888', runseed=5656, smi_dim=256, stop_epoch=300)
+================== ITER = 0 ===================
+RAMDOM TEST Dataset CI = 0.752603, MSE = 0.521169, pearson = 0.705231 sp = 0.700229
+SCAFFOLD TEST Dataset CI = 0.712806, MSE = 0.415877, pearson = 0.638429 sp = 0.629975
+================== ITER = 1 ===================
+RAMDOM TEST Dataset CI = 0.779958, MSE = 0.382406, pearson = 0.754184 sp = 0.755982
+SCAFFOLD TEST Dataset CI = 0.734093, MSE = 0.345063, pearson = 0.707709 sp = 0.690806
+run time = 0:30:53.367466
+================== ITER = 2 ===================
+RAMDOM TEST Dataset CI = 0.768703, MSE = 0.430607, pearson = 0.739488 sp = 0.735227
+SCAFFOLD TEST Dataset CI = 0.745721, MSE = 0.336407, pearson = 0.708979 sp = 0.700176
+run time = 0:30:44.413152
+================== ITER = 3 ===================
+RAMDOM TEST Dataset CI = 0.802216, MSE = 0.328563, pearson = 0.800427 sp = 0.806423
+SCAFFOLD TEST Dataset CI = 0.782773, MSE = 0.264986, pearson = 0.785682 sp = 0.773026
+run time = 0:33:00.664169
+================== ITER = 4 ===================
+RAMDOM TEST Dataset CI = 0.803330, MSE = 0.310560, pearson = 0.805534 sp = 0.807376
+SCAFFOLD TEST Dataset CI = 0.783790, MSE = 0.253754, pearson = 0.790994 sp = 0.779227
+run time = 0:32:20.144622
+================== ITER = 5 ===================
+RAMDOM TEST Dataset CI = 0.801104, MSE = 0.330655, pearson = 0.792456 sp = 0.796006
+SCAFFOLD TEST Dataset CI = 0.767404, MSE = 0.280705, pearson = 0.766321 sp = 0.756537
+run time = 0:31:32.661015
+================== ITER = 6 ===================
+RAMDOM TEST Dataset CI = 0.797717, MSE = 0.332615, pearson = 0.794680 sp = 0.801725
+SCAFFOLD TEST Dataset CI = 0.770145, MSE = 0.288519, pearson = 0.767360 sp = 0.762776
+run time = 0:31:46.716429
+================== ITER = 7 ===================
+RAMDOM TEST Dataset CI = 0.808780, MSE = 0.311060, pearson = 0.803646 sp = 0.809136
+SCAFFOLD TEST Dataset CI = 0.780418, MSE = 0.255981, pearson = 0.787502 sp = 0.781861
+run time = 0:31:00.659967
+================== ITER = 8 ===================
+RAMDOM TEST Dataset CI = 0.807471, MSE = 0.317073, pearson = 0.804980 sp = 0.808101
+SCAFFOLD TEST Dataset CI = 0.781773, MSE = 0.264804, pearson = 0.792239 sp = 0.780161
+run time = 0:31:16.342130
+================== ITER = 9 ===================
+RAMDOM TEST Dataset CI = 0.812417, MSE = 0.298023, pearson = 0.813928 sp = 0.821759
+SCAFFOLD TEST Dataset CI = 0.785910, MSE = 0.251273, pearson = 0.792849 sp = 0.783727
+run time = 0:31:27.826950
+================== ITER = 10 ===================
+RAMDOM TEST Dataset CI = 0.814499, MSE = 0.293712, pearson = 0.819225 sp = 0.822516
+SCAFFOLD TEST Dataset CI = 0.797722, MSE = 0.235284, pearson = 0.809290 sp = 0.798782
+run time = 0:31:11.350875
+================== ITER = 11 ===================
+RAMDOM TEST Dataset CI = 0.803771, MSE = 0.322484, pearson = 0.800950 sp = 0.804363
+SCAFFOLD TEST Dataset CI = 0.787660, MSE = 0.263284, pearson = 0.788516 sp = 0.783094
+run time = 0:32:32.952496
+================== ITER = 12 ===================
+RAMDOM TEST Dataset CI = 0.828251, MSE = 0.272044, pearson = 0.837619 sp = 0.840452
+SCAFFOLD TEST Dataset CI = 0.794418, MSE = 0.228466, pearson = 0.816939 sp = 0.804811
+run time = 0:31:55.674440
+================== ITER = 13 ===================
+RAMDOM TEST Dataset CI = 0.818556, MSE = 0.272643, pearson = 0.832009 sp = 0.834410
+SCAFFOLD TEST Dataset CI = 0.805837, MSE = 0.228862, pearson = 0.815310 sp = 0.809174
+run time = 0:33:12.135836
+================== ITER = 14 ===================
+RAMDOM TEST Dataset CI = 0.817393, MSE = 0.296416, pearson = 0.821046 sp = 0.825571
+SCAFFOLD TEST Dataset CI = 0.799097, MSE = 0.236231, pearson = 0.809672 sp = 0.800114
+run time = 0:33:46.688716
+================== ITER = 15 ===================
+RAMDOM TEST Dataset CI = 0.822056, MSE = 0.281307, pearson = 0.838573 sp = 0.838850
+SCAFFOLD TEST Dataset CI = 0.807148, MSE = 0.229647, pearson = 0.824456 sp = 0.814422
+run time = 0:33:04.895965
+================== ITER = 16 ===================
+RAMDOM TEST Dataset CI = 0.825869, MSE = 0.286823, pearson = 0.829552 sp = 0.836787
+SCAFFOLD TEST Dataset CI = 0.805069, MSE = 0.228967, pearson = 0.814363 sp = 0.810867
+run time = 0:33:06.370150
+================== ITER = 17 ===================
+RAMDOM TEST Dataset CI = 0.819945, MSE = 0.285899, pearson = 0.828509 sp = 0.832116
+SCAFFOLD TEST Dataset CI = 0.794778, MSE = 0.248489, pearson = 0.795535 sp = 0.785092
+run time = 0:35:01.985725
+================== ITER = 18 ===================
+RAMDOM TEST Dataset CI = 0.832517, MSE = 0.296479, pearson = 0.841104 sp = 0.848186
+SCAFFOLD TEST Dataset CI = 0.809810, MSE = 0.229321, pearson = 0.823232 sp = 0.816387
+run time = 0:34:07.498011
+================== ITER = 19 ===================
+RAMDOM TEST Dataset CI = 0.813227, MSE = 0.295622, pearson = 0.821735 sp = 0.820471
+SCAFFOLD TEST Dataset CI = 0.803416, MSE = 0.243074, pearson = 0.804754 sp = 0.803042
+run time = 0:34:26.680870
+================== ITER = 20 ===================
+RAMDOM TEST Dataset CI = 0.826872, MSE = 0.253067, pearson = 0.845104 sp = 0.845083
+SCAFFOLD TEST Dataset CI = 0.813306, MSE = 0.214937, pearson = 0.829084 sp = 0.818187
+run time = 0:34:45.825263
+================== ITER = 21 ===================
+RAMDOM TEST Dataset CI = 0.827658, MSE = 0.263329, pearson = 0.838944 sp = 0.843132
+SCAFFOLD TEST Dataset CI = 0.806091, MSE = 0.217671, pearson = 0.823676 sp = 0.811311
+run time = 0:34:32.605001
+================== ITER = 22 ===================
+RAMDOM TEST Dataset CI = 0.828742, MSE = 0.272432, pearson = 0.839436 sp = 0.844976
+SCAFFOLD TEST Dataset CI = 0.799426, MSE = 0.232158, pearson = 0.814486 sp = 0.801231
+run time = 0:35:11.008404
+================== ITER = 23 ===================
+RAMDOM TEST Dataset CI = 0.826161, MSE = 0.264813, pearson = 0.837952 sp = 0.840128
+SCAFFOLD TEST Dataset CI = 0.817896, MSE = 0.216692, pearson = 0.826241 sp = 0.820431
+run time = 0:36:01.611741
+================== ITER = 24 ===================
+RAMDOM TEST Dataset CI = 0.823906, MSE = 0.273790, pearson = 0.836883 sp = 0.837799
+SCAFFOLD TEST Dataset CI = 0.800843, MSE = 0.227248, pearson = 0.819056 sp = 0.814762
+run time = 0:36:11.419655
+================== ITER = 25 ===================
+RAMDOM TEST Dataset CI = 0.830030, MSE = 0.262796, pearson = 0.841670 sp = 0.846098
+SCAFFOLD TEST Dataset CI = 0.803465, MSE = 0.220447, pearson = 0.823140 sp = 0.817974
+run time = 0:37:33.983877
+================== ITER = 26 ===================
+RAMDOM TEST Dataset CI = 0.827823, MSE = 0.273996, pearson = 0.838090 sp = 0.838385
+SCAFFOLD TEST Dataset CI = 0.809912, MSE = 0.232389, pearson = 0.822527 sp = 0.819418
+run time = 0:37:25.253148
+================== ITER = 27 ===================
+RAMDOM TEST Dataset CI = 0.822178, MSE = 0.278108, pearson = 0.828526 sp = 0.829856
+SCAFFOLD TEST Dataset CI = 0.796560, MSE = 0.231837, pearson = 0.813883 sp = 0.808701
+run time = 0:37:48.340338
+================== ITER = 28 ===================
+RAMDOM TEST Dataset CI = 0.833007, MSE = 0.252277, pearson = 0.846248 sp = 0.851693
+SCAFFOLD TEST Dataset CI = 0.806806, MSE = 0.214854, pearson = 0.825646 sp = 0.813739
+run time = 0:36:28.100975
+================== ITER = 29 ===================
+RAMDOM TEST Dataset CI = 0.828968, MSE = 0.265050, pearson = 0.841008 sp = 0.845255
+SCAFFOLD TEST Dataset CI = 0.806317, MSE = 0.220024, pearson = 0.821822 sp = 0.815719
+run time = 0:35:14.309892
+================== ITER = 30 ===================
+RAMDOM TEST Dataset CI = 0.831197, MSE = 0.264548, pearson = 0.845650 sp = 0.847873
+SCAFFOLD TEST Dataset CI = 0.807002, MSE = 0.222286, pearson = 0.822062 sp = 0.813180
+run time = 0:35:31.261605
+================== ITER = 31 ===================
+RAMDOM TEST Dataset CI = 0.825755, MSE = 0.262956, pearson = 0.838676 sp = 0.840249
+SCAFFOLD TEST Dataset CI = 0.803287, MSE = 0.228106, pearson = 0.816136 sp = 0.803326
+run time = 0:34:10.086291
+================== ITER = 32 ===================
+RAMDOM TEST Dataset CI = 0.826225, MSE = 0.254872, pearson = 0.843468 sp = 0.844422
+SCAFFOLD TEST Dataset CI = 0.808532, MSE = 0.226465, pearson = 0.821243 sp = 0.811542
+run time = 0:33:32.524656
+================== ITER = 33 ===================
+RAMDOM TEST Dataset CI = 0.823273, MSE = 0.268791, pearson = 0.834045 sp = 0.838733
+SCAFFOLD TEST Dataset CI = 0.807250, MSE = 0.224361, pearson = 0.818218 sp = 0.807174
+run time = 0:33:05.610309
+================== ITER = 34 ===================
+RAMDOM TEST Dataset CI = 0.826907, MSE = 0.258508, pearson = 0.842569 sp = 0.844288
+SCAFFOLD TEST Dataset CI = 0.803807, MSE = 0.222336, pearson = 0.823298 sp = 0.810158
+run time = 0:32:57.834433
+================== ITER = 35 ===================
+RAMDOM TEST Dataset CI = 0.818671, MSE = 0.274172, pearson = 0.830041 sp = 0.828073
+SCAFFOLD TEST Dataset CI = 0.794538, MSE = 0.228853, pearson = 0.813583 sp = 0.803167
+run time = 0:33:52.804994
+================== ITER = 36 ===================
+RAMDOM TEST Dataset CI = 0.825283, MSE = 0.258317, pearson = 0.842510 sp = 0.843676
+SCAFFOLD TEST Dataset CI = 0.805900, MSE = 0.227876, pearson = 0.819330 sp = 0.810285
+run time = 0:35:16.633537
+================== ITER = 37 ===================
+RAMDOM TEST Dataset CI = 0.836765, MSE = 0.236403, pearson = 0.856556 sp = 0.858045
+SCAFFOLD TEST Dataset CI = 0.817216, MSE = 0.210007, pearson = 0.837056 sp = 0.829793
+run time = 0:35:30.066407
+================== ITER = 38 ===================
+RAMDOM TEST Dataset CI = 0.836677, MSE = 0.233816, pearson = 0.858046 sp = 0.859638
+SCAFFOLD TEST Dataset CI = 0.812933, MSE = 0.217372, pearson = 0.827411 sp = 0.814522
+run time = 0:35:16.479561
+================== ITER = 39 ===================
+RAMDOM TEST Dataset CI = 0.825358, MSE = 0.267357, pearson = 0.833932 sp = 0.836912
+SCAFFOLD TEST Dataset CI = 0.795591, MSE = 0.236845, pearson = 0.805889 sp = 0.801865
+run time = 0:35:35.884478

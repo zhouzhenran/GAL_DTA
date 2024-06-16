@@ -201,7 +201,7 @@ def load_dataloader(data_dir,protein_name,args,num_iter=0):
     elif 'O00329' in protein_name:
         test_path = os.path.join('data/test', f'O00329_test_scaffold.csv')
     elif 'P10721' in protein_name:
-        test_path = os.path.join('datatest', f'P10721_test_scaffold.csv')
+        test_path = os.path.join('data/test', f'P10721_test_scaffold.csv')
     elif 'P36888' in protein_name:
         test_path = os.path.join('data/test', f'P36888_test_scaffold.csv')
 

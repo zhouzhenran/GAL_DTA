@@ -4,8 +4,8 @@ import os
 def al_argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--protein_name', type=str, default='P51449')
-    parser.add_argument('--device', type=int, default=1,
-                        help='which gpu to use if any (default: 1)')
+    parser.add_argument('--device', type=int, default=0,
+                        help='which gpu to use if any (default: 0)')
     parser.add_argument('--emb_dim', type=int, default=128,
                         help='features embedding dimensions ')
     parser.add_argument('--smi_dim', type=int, default=256,
@@ -29,6 +29,6 @@ def al_argparser():
     return args
 
 def logging(msg, FLAGS):
-  fpath = os.path.join( FLAGS.log_dir, f"log_{FLAGS.train_type}.txt" )
+  fpath = os.path.join( FLAGS.log_dir, f"log.txt" )
   with open( fpath, "a" ) as fw:
     fw.write("%s\n" % msg)
